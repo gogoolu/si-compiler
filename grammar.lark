@@ -1,0 +1,61 @@
+?start: stmts
+
+?stmts: stmt stmt*
+
+?stmt: assign_stmt
+    | if_stmt
+    | while_stmt
+    | print_stmt
+    | expr ";"
+    | declare_stmt ";"
+
+?declare_stmt: "number" NAME ["=" expr ] -> number_declare
+    | "type" NAME "(" [args_list] ")" [";" | "{" stmts "}"] -> function_declare
+    // | "class" NAME ""
+
+?args_list: NAME
+
+?assign_stmt: NAME "=" expr ";" -> assign
+    | NAME "+=" expr ";" -> add_assign
+    | NAME "-=" expr ";" -> sub_assign
+    | NAME "*=" expr ";" -> mul_assign
+    | NAME "/=" expr ";" -> div_assign
+
+?if_stmt: "if" "(" expr ")" ("{" stmts "}" | stmt) ["else" ("{" stmts "}" | stmt)] -> if_stmt
+
+?while_stmt: "while" "(" expr ")" ("{" stmts "}" | stmt) -> while_stmt
+
+?print_stmt: "print" "(" expr ")" ";" -> print_stmt
+
+?expr: logi_factor
+    | "!" expr -> s_not
+    | expr "||" logi_factor -> s_or_
+    | expr "&&" logi_factor -> s_and
+
+?logi_factor: term
+    | logi_factor ">"  term -> gt
+    | logi_factor ">=" term -> ge
+    | logi_factor "<"  term -> lt
+    | logi_factor "<=" term -> le
+    | logi_factor "==" term -> eq
+    | logi_factor "!=" term -> ne
+
+?term: factor
+    | term "+" factor -> add
+    | term "-" factor -> sub
+
+?factor: atom
+    | factor "*" atom -> mul
+    | factor "/" atom -> div
+
+?atom: SIGNED_NUMBER -> number
+    | "(" expr ")"
+    | BOOL -> boolean
+    | NAME -> var
+
+BOOL.1: /(true|false)/
+
+%import common.CNAME -> NAME
+%import common.SIGNED_NUMBER
+%import common.WS
+%ignore WS

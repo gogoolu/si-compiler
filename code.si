@@ -1,0 +1,13 @@
+number a = 1;
+number b = 10;
+
+while (b > a) {
+    print(a);
+    a += 1;
+}
+
+if (a > 1 + 2) {
+    print(true);
+} else {
+    print(false);
+}
